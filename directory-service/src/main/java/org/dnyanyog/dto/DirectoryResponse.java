@@ -12,7 +12,7 @@ public class DirectoryResponse {
   private String password;
   private String confirm;
   private String email;
-  private Long userid;
+  private String userid;
   private String username;
 
   public String getStatus() {
@@ -71,11 +71,11 @@ public class DirectoryResponse {
     this.email = email;
   }
 
-  public Long getUserid() {
+  public String getUserid() {
     return userid;
   }
 
-  public void setUserid(Long userid) {
+  public void setUserid(String userid) {
     this.userid = userid;
   }
 

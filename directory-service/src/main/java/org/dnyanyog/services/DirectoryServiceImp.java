@@ -7,6 +7,7 @@ import org.dnyanyog.dto.DirectoryResponse;
 import org.dnyanyog.encryption.EncDec;
 import org.dnyanyog.entity.User;
 import org.dnyanyog.repo.DirectoryRepository;
+import org.dnyanyog.utils.IdGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -16,6 +17,13 @@ public class DirectoryServiceImp {
   @Autowired private DirectoryRepository userRepo;
 
   @Autowired private EncDec encrypt;
+
+  private String generateUserId() {
+    return "USR"
+        + IdGenerator
+            .generateUserId(); // Assuming you have a method to generate a random alphanumeric
+    // string
+  }
 
   public DirectoryResponse addUser(DirectoryRequest request) {
     DirectoryResponse response = new DirectoryResponse();
@@ -27,7 +35,10 @@ public class DirectoryServiceImp {
       user.setPassword(encrypt.encrypt(request.getPassword()));
       user.setUsername(request.getUsername());
       user.setRole(request.getRole());
-      user.setUserid(request.getUserid());
+
+      // Generate user ID
+      String userId = generateUserId();
+      user.setUserid(userId);
 
       user = userRepo.save(user);
 
@@ -48,15 +59,11 @@ public class DirectoryServiceImp {
     return response;
   }
 
-  public DirectoryResponse updateUser(Long userid, DirectoryRequest request) {
+  public DirectoryResponse updateUser(String userid, DirectoryRequest request) {
     DirectoryResponse response = new DirectoryResponse();
-    Optional<User> receiveData = userRepo.findById(userid);
-    if (receiveData.isEmpty()) {
-      response.setMessage(ResponseCode.Update_User_Failed.getMessage());
-      response.setStatus(ResponseCode.Update_User_Failed.getStatus());
-      response.setUserid(userid);
-    } else {
-      try {
+    try {
+      Optional<User> receiveData = userRepo.findByUserid(userid);
+      if (receiveData.isPresent()) {
         User user = receiveData.get();
         user.setConfirm(request.getConfirm());
         user.setMobileNumber(request.getMobile_number());
@@ -75,45 +82,62 @@ public class DirectoryServiceImp {
         response.setConfirm(user.getConfirm());
         response.setEmail(user.getEmail());
         response.setUserid(user.getUserid());
-      } catch (Exception e) {
+      } else {
         response.setMessage(ResponseCode.Update_User_Failed.getMessage());
         response.setStatus(ResponseCode.Update_User_Failed.getStatus());
         response.setUserid(userid);
       }
+    } catch (Exception e) {
+      response.setMessage(ResponseCode.Update_User_Failed.getMessage());
+      response.setStatus(ResponseCode.Update_User_Failed.getStatus());
+      response.setUserid(userid);
     }
     return response;
   }
 
-  public DirectoryResponse getSingleUser(Long userid) {
+  public DirectoryResponse getSearchUser(String userid) {
     DirectoryResponse response = new DirectoryResponse();
-    Optional<User> receiveData = userRepo.findById(userid);
-    if (receiveData.isEmpty()) {
+    try {
+      Optional<User> receiveData = userRepo.findByUserid(userid);
+      if (receiveData.isPresent()) {
+        User user = receiveData.get();
+        response.setMessage(ResponseCode.Search_User.getMessage());
+        response.setStatus(ResponseCode.Search_User.getStatus());
+        response.setUsername(user.getUsername());
+        response.setEmail(user.getEmail());
+        response.setMobile_number(user.getMobileNumber());
+        response.setRole(user.getRole());
+        response.setPassword(user.getPassword());
+        response.setConfirm(user.getConfirm());
+        response.setUserid(userid);
+      } else {
+        response.setMessage(ResponseCode.Search_User_Failed.getMessage());
+        response.setStatus(ResponseCode.Search_User_Failed.getStatus());
+        response.setUserid(userid);
+      }
+    } catch (Exception e) {
       response.setMessage(ResponseCode.Search_User_Failed.getMessage());
       response.setStatus(ResponseCode.Search_User_Failed.getStatus());
       response.setUserid(userid);
-    } else {
-      User user = receiveData.get();
-      response.setMessage(ResponseCode.Search_User.getMessage());
-      response.setStatus(ResponseCode.Search_User.getStatus());
-      response.setUsername(user.getUsername());
-      response.setEmail(user.getEmail());
-      response.setMobile_number(user.getMobileNumber());
-      response.setRole(user.getRole());
-      response.setPassword(user.getPassword());
-      response.setConfirm(user.getConfirm());
     }
     return response;
   }
 
-  public DirectoryResponse deleteUser(Long userid) {
+  public DirectoryResponse deleteUser(String userid) {
     DirectoryResponse response = new DirectoryResponse();
-    Optional<User> receiveData = userRepo.findById(userid);
-    if (receiveData.isPresent()) {
-      userRepo.deleteById(userid);
-      response.setMessage(ResponseCode.Delete_User.getMessage());
-      response.setStatus(ResponseCode.Delete_User.getStatus());
-      response.setUserid(userid);
-    } else {
+    try {
+      Optional<User> receiveData = userRepo.findByUserid(userid);
+      if (receiveData.isPresent()) {
+        userRepo.findByUserid(userid);
+        response.setMessage(ResponseCode.Delete_User.getMessage());
+        response.setStatus(ResponseCode.Delete_User.getStatus());
+        response.setUserid(userid);
+      } else {
+        response.setMessage(ResponseCode.Delete_User_Failed.getMessage());
+        response.setStatus(ResponseCode.Delete_User_Failed.getStatus());
+        response.setUserid(userid);
+      }
+    } catch (Exception e) {
       response.setMessage(ResponseCode.Delete_User_Failed.getMessage());
       response.setStatus(ResponseCode.Delete_User_Failed.getStatus());
       response.setUserid(userid);

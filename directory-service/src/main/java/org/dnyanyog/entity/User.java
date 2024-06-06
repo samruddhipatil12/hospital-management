@@ -3,7 +3,6 @@ package org.dnyanyog.entity;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import org.springframework.stereotype.Component;
@@ -14,7 +13,7 @@ import org.springframework.stereotype.Component;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class User {
 
-  @Id @GeneratedValue @Column private long userid;
+  @Id @Column private String userid;
   @Column private String username;
   @Column private String email;
   @Column private Long mobileNumber;
@@ -22,11 +21,11 @@ public class User {
   @Column private String password;
   @Column private String confirm;
 
-  public long getUserid() {
+  public String getUserid() {
     return userid;
   }
 
-  public void setUserid(long userid) {
+  public void setUserid(String userid) {
     this.userid = userid;
   }
 
@@ -76,5 +75,8 @@ public class User {
 
   public void setConfirm(String confirm) {
     this.confirm = confirm;
+  }
+
+  public void setMobileNumber(String string) { // TODO Auto-generated method stub
   }
 }

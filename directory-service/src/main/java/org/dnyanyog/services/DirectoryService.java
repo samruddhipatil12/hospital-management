@@ -6,9 +6,9 @@ import org.dnyanyog.dto.DirectoryResponse;
 public interface DirectoryService {
   public DirectoryResponse addUser(DirectoryRequest request);
 
-  public DirectoryResponse updateUser(Long userid, DirectoryRequest request);
+  public DirectoryResponse updateUser(String userid, DirectoryRequest request);
 
-  public DirectoryResponse getSingleUser(Long userid);
+  public DirectoryResponse getSearchUser(String userid);
 
-  public DirectoryResponse Deleteuser(Long userid);
+  public DirectoryResponse Deleteuser(String userid);
 }
