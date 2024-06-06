@@ -2,6 +2,7 @@ package org.dnyanyog.services;
 
 import jakarta.validation.Valid;
 import java.util.List;
+import java.util.Optional;
 import org.dnyanyog.common.ResponseCode;
 import org.dnyanyog.dto.AppointmentRequest;
 import org.dnyanyog.dto.AppointmentResponse;
@@ -23,11 +24,11 @@ public class AppointmentManagementServiceImp {
   public AppointmentResponse addAppointment(@Valid AppointmentRequest request) throws Exception {
     AppointmentResponse appointmentResponse = AppointmentResponse.getInstance();
     Appointments newAppointment = new Appointments();
-    String patientId = IdGenerator.generatePatientId();
-    newAppointment.setPatientId(patientId);
+    String appointmentId = IdGenerator.generateAppointmentId();
+    newAppointment.setAppointmentId(appointmentId); // Set the generated appointment ID
 
+    newAppointment.setPatientId(IdGenerator.generatePatientId()); // Generate and set the patient ID
     newAppointment.setPatientNameEnglish(request.getPatient_name_english());
-    newAppointment.setAppointmentDate(request.getAppointment_date());
     newAppointment.setExaminationDate(request.getExamination_date());
 
     try {
@@ -44,27 +45,25 @@ public class AppointmentManagementServiceImp {
   }
 
   private void populateAppointmentResponse(AppointmentResponse response, Appointments appointment) {
-    response.setAppointment_id(
-        String.valueOf(appointment.getAppointmentId())); // Convert long to String
+    response.setAppointmentId(
+        appointment.getAppointmentId()); // No need to convert as it is already a String
     response.setPatient_name_english(appointment.getPatientNameEnglish());
     response.setPatient_id(appointment.getPatientId());
-    response.setAppointment_date(appointment.getAppointmentDate());
     response.setExamination_date(appointment.getExaminationDate());
   }
 
   public AppointmentResponse updateAppointment(
       String patientId, @Valid AppointmentRequest request) {
-    List<Appointments> appointments = appointmentRepo.findByPatientId(patientId);
+    List<Appointments> appointmentOptional = appointmentRepo.findByPatientId(patientId);
     AppointmentResponse appointmentResponse = AppointmentResponse.getInstance();
 
-    if (appointments.isEmpty()) {
+    if (appointmentOptional.isEmpty()) {
       appointmentResponse.setStatus(ResponseCode.UPDATE_APPOINTMENT_FAILED.getStatus());
       appointmentResponse.setMessage(ResponseCode.UPDATE_APPOINTMENT_FAILED.getMessage());
     } else {
-      Appointments appointment = appointments.get(0);
+      Appointments appointment = appointmentOptional.get(0);
 
       appointment.setPatientNameEnglish(request.getPatient_name_english());
-      appointment.setAppointmentDate(request.getAppointment_date());
       appointment.setExaminationDate(request.getExamination_date());
 
       try {
@@ -81,15 +80,15 @@ public class AppointmentManagementServiceImp {
     return appointmentResponse;
   }
 
-  public AppointmentResponse searchAppointment(String patientId) {
-    List<Appointments> appointments = appointmentRepo.findByPatientId(patientId);
+  public AppointmentResponse searchAppointment(String appointmentId) {
+    Optional<Appointments> appointmentOptional = appointmentRepo.findByAppointmentId(appointmentId);
     AppointmentResponse appointmentResponse = AppointmentResponse.getInstance();
 
-    if (appointments.isEmpty()) {
+    if (appointmentOptional.isEmpty()) {
       appointmentResponse.setMessage(ResponseCode.SEARCH_APPOINTMENT_FAILED.getMessage());
       appointmentResponse.setStatus(ResponseCode.SEARCH_APPOINTMENT_FAILED.getStatus());
     } else {
-      Appointments appointment = appointments.get(0);
+      Appointments appointment = appointmentOptional.get();
       populateAppointmentResponse(appointmentResponse, appointment);
       appointmentResponse.setMessage(ResponseCode.SEARCH_APPOINTMENT.getMessage());
       appointmentResponse.setStatus(ResponseCode.SEARCH_APPOINTMENT.getStatus());
@@ -98,15 +97,15 @@ public class AppointmentManagementServiceImp {
     return appointmentResponse;
   }
 
-  public AppointmentResponse deleteAppointment(String patientId) {
-    List<Appointments> appointments = appointmentRepo.findByPatientId(patientId);
+  public AppointmentResponse deleteAppointment(String appointmentId) {
+    Optional<Appointments> appointmentOptional = appointmentRepo.findByAppointmentId(appointmentId);
     AppointmentResponse appointmentResponse = AppointmentResponse.getInstance();
 
-    if (appointments.isEmpty()) {
+    if (appointmentOptional.isEmpty()) {
       appointmentResponse.setMessage(ResponseCode.DELETE_APPOINTMENT_FAILED.getMessage());
       appointmentResponse.setStatus(ResponseCode.DELETE_APPOINTMENT_FAILED.getStatus());
     } else {
-      Appointments appointment = appointments.get(0);
+      Appointments appointment = appointmentOptional.get();
       appointmentRepo.delete(appointment);
 
       appointmentResponse.setMessage(ResponseCode.DELETE_APPOINTMENT.getMessage());

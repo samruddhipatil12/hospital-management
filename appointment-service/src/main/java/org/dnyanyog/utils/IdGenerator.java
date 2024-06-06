@@ -14,4 +14,13 @@ public class IdGenerator {
     }
     return builder.toString();
   }
+
+  public static String generateAppointmentId() {
+    StringBuilder builder = new StringBuilder("APP");
+    for (int i = 0; i < 8; i++) {
+      int character = random.nextInt(ALPHA_NUMERIC_STRING.length());
+      builder.append(ALPHA_NUMERIC_STRING.charAt(character));
+    }
+    return builder.toString();
+  }
 }
