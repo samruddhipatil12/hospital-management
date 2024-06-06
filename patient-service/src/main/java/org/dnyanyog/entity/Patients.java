@@ -4,44 +4,59 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import org.springframework.stereotype.Component;
 
 @Entity
 @Component
-@Table
+@Table(name = "patients") // Make sure this matches your actual table name
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class Patients {
 
   @GeneratedValue
   @Id
-  @Column(name = "PatientId", nullable = false, insertable = true, updatable = false)
-  private long patient_id;
+  @Column(nullable = false, insertable = true, updatable = false)
+  private long patient_code;
 
-  @Column(nullable = false, insertable = true, updatable = false, length = 50)
+  @Column(name = "patient_id", nullable = false, updatable = false)
+  private String patientId;
+
+  @Column(name = "patient_name_english", nullable = false, length = 50)
   private String patient_name_english;
 
-  @Column(nullable = false, insertable = true, updatable = false, length = 50)
+  @Column(name = "patient_name_marathi", nullable = false, length = 50)
   private String patient_name_marathi;
 
-  @Column private String mobile_number;
+  @Column(name = "mobile_number")
+  private String mobile_number;
 
-  @Column private String gender;
+  @Column(name = "gender")
+  private String gender;
 
-  @Column private String birth_date;
+  @Column(name = "birth_date")
+  private String birth_date;
 
-  @Column private String first_examination_date;
+  @Column(name = "first_examination_date")
+  private String first_examination_date;
 
-  @Column private String address;
+  @Column(name = "address")
+  private String address;
 
-  public long getPatient_id() {
-    return patient_id;
+  public long getPatient_code() {
+    return patient_code;
   }
 
-  public void setPatient_id(long patient_id) {
-    this.patient_id = patient_id;
+  public void setPatient_code(long patient_code) {
+    this.patient_code = patient_code;
+  }
+
+  public String getpatientId() {
+    return patientId;
+  }
+
+  public void setpatientId(String patientId) {
+    this.patientId = patientId;
   }
 
   public String getPatient_name_english() {

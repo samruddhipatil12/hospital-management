@@ -4,40 +4,31 @@ import org.dnyanyog.dto.PatientRequest;
 import org.dnyanyog.dto.PatientResponse;
 import org.dnyanyog.services.PatientManagementServiceImp;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 public class PatientManagementController {
 
-  @Autowired PatientManagementServiceImp patientService;
+  @Autowired private PatientManagementServiceImp patientService;
 
-  @PostMapping(
-      path = "/api/v1/patient/add",
-      consumes = {"application/json", "application/xml"},
-      produces = {"application/json", "application/xml"})
-  public PatientResponse addUser(@RequestBody PatientRequest patientRequest) throws Exception {
-    return patientService.addPatient(patientRequest);
+  @PostMapping("/api/v1/patient/add")
+  public PatientResponse addPatient(@RequestBody PatientRequest request) {
+    return patientService.addPatient(request);
   }
 
-  @PostMapping("/api/v1/patient/{patient_id}")
+  @PutMapping("/api/v1/patient/{patientId}")
   public PatientResponse updatePatient(
-      @PathVariable long patient_id, @RequestBody PatientRequest request) {
-    return patientService.updatePatient(patient_id, request);
+      @PathVariable("patientId") String patientId, @RequestBody PatientRequest request) {
+    return patientService.updatePatient(patientId, request);
   }
 
-  @GetMapping(path = "/api/v1/patient/{patient_id}")
-  public PatientResponse searchPatient(@PathVariable long patient_id) {
-
-    return patientService.searchPatient(patient_id);
+  @GetMapping("/api/v1/patient/{patientId}")
+  public PatientResponse searchPatient(@PathVariable("patientId") String patientId) {
+    return patientService.searchPatient(patientId);
   }
 
-  @DeleteMapping(path = "/api/v1/patient/{patient_id}")
-  public PatientResponse deletePatient(@PathVariable long patient_id) {
-    return patientService.deletePatient(patient_id);
+  @DeleteMapping("/api/v1/patient/{patientId}")
+  public PatientResponse deletePatient(@PathVariable("patientId") String patientId) {
+    return patientService.deletePatient(patientId);
   }
 }

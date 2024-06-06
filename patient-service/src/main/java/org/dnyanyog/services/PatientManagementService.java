@@ -1,16 +1,15 @@
 package org.dnyanyog.services;
 
-import jakarta.validation.Valid;
 import org.dnyanyog.dto.PatientRequest;
 import org.dnyanyog.dto.PatientResponse;
 
 public interface PatientManagementService {
 
-  public PatientResponse addPatient(@Valid PatientRequest request) throws Exception;
+  PatientResponse addPatient(PatientRequest request) throws Exception;
 
-  public PatientResponse updatePatient(long patient_id, PatientRequest request);
+  PatientResponse updatePatient(String patientId, PatientRequest request);
 
-  public PatientResponse searchPatient(long patient_id);
+  PatientResponse searchPatient(String patientId);
 
-  public PatientResponse deletePatient(long patient_id);
+  PatientResponse deletePatient(String patientId);
 }
