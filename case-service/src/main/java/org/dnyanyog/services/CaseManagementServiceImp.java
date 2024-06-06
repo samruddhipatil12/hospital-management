@@ -2,11 +2,13 @@ package org.dnyanyog.services;
 
 import jakarta.validation.Valid;
 import java.util.List;
+import java.util.Optional;
 import org.dnyanyog.common.ResponseCode;
 import org.dnyanyog.dto.CaseRequest;
 import org.dnyanyog.dto.CaseResponse;
 import org.dnyanyog.entity.Cases;
 import org.dnyanyog.repo.CaseRepository;
+import org.dnyanyog.utils.IdGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -15,7 +17,7 @@ public class CaseManagementServiceImp {
 
   @Autowired private CaseRepository caseRepo;
 
-  public List<Cases> getCasesByPatientId(Long patientId) {
+  public List<Cases> getCasesByPatientId(String patientId) {
     return caseRepo.findByPatientId(patientId);
   }
 
@@ -23,6 +25,11 @@ public class CaseManagementServiceImp {
     CaseResponse response = CaseResponse.getInstance();
     Cases newCase = new Cases();
 
+    String patientId = IdGenerator.generatePatientId();
+    String caseId = IdGenerator.generateCaseId();
+
+    newCase.setPatientId(patientId);
+    newCase.setCaseId(caseId);
     newCase.setPatientNameEnglish(request.getPatientNameEnglish());
     newCase.setCaseNumber(request.getCaseNumber());
     newCase.setSymptoms(request.getSymptoms());
@@ -42,23 +49,17 @@ public class CaseManagementServiceImp {
     return response;
   }
 
-  private void populateCaseResponse(CaseResponse response, Cases newCase) {
-    response.setPatientNameEnglish(newCase.getPatientNameEnglish());
-    response.setPatientId(String.valueOf(newCase.getPatientId())); // Convert Long to String
-    response.setCaseNumber(newCase.getCaseNumber());
-    response.setSymptoms(newCase.getSymptoms());
-    response.setPrescription(newCase.getPrescription());
-    response.setExaminationDate(newCase.getExaminationDate());
-  }
-
-  public CaseResponse updateCase(Long patientId, @Valid CaseRequest request) {
-    Cases existingCase = caseRepo.findById(patientId).orElse(null);
+  public CaseResponse updateCase(String caseId, @Valid CaseRequest request) {
     CaseResponse response = CaseResponse.getInstance();
 
-    if (existingCase == null) {
+    Optional<Cases> existingCaseOptional = caseRepo.findById(caseId);
+
+    if (existingCaseOptional.isEmpty()) {
       response.setStatus(ResponseCode.UPDATE_CASE_FAILED.getStatus());
       response.setMessage(ResponseCode.UPDATE_CASE_FAILED.getMessage());
     } else {
+      Cases existingCase = existingCaseOptional.get();
+
       existingCase.setPatientNameEnglish(request.getPatientNameEnglish());
       existingCase.setCaseNumber(request.getCaseNumber());
       existingCase.setSymptoms(request.getSymptoms());
@@ -79,14 +80,15 @@ public class CaseManagementServiceImp {
     return response;
   }
 
-  public CaseResponse searchCase(Long patientId) {
-    Cases foundCase = caseRepo.findById(patientId).orElse(null);
+  public CaseResponse searchCase(String caseId) {
+    Optional<Cases> foundCaseOpt = caseRepo.findByCaseId(caseId);
     CaseResponse response = CaseResponse.getInstance();
 
-    if (foundCase == null) {
+    if (foundCaseOpt.isEmpty()) {
       response.setMessage(ResponseCode.SEARCH_CASE_FAILED.getMessage());
       response.setStatus(ResponseCode.SEARCH_CASE_FAILED.getStatus());
     } else {
+      Cases foundCase = foundCaseOpt.get();
       populateCaseResponse(response, foundCase);
       response.setMessage(ResponseCode.SEARCH_CASE.getMessage());
       response.setStatus(ResponseCode.SEARCH_CASE.getStatus());
@@ -95,19 +97,30 @@ public class CaseManagementServiceImp {
     return response;
   }
 
-  public CaseResponse deleteCase(Long patientId) {
-    Cases foundCase = caseRepo.findById(patientId).orElse(null);
+  public CaseResponse deleteCase(String patientId) {
+    List<Cases> foundCases = caseRepo.findByPatientId(patientId);
     CaseResponse response = CaseResponse.getInstance();
 
-    if (foundCase == null) {
+    if (foundCases.isEmpty()) {
       response.setMessage(ResponseCode.DELETE_CASE_FAILED.getMessage());
       response.setStatus(ResponseCode.DELETE_CASE_FAILED.getStatus());
     } else {
+      Cases foundCase = foundCases.get(0);
       caseRepo.delete(foundCase);
       response.setMessage(ResponseCode.DELETE_CASE.getMessage());
       response.setStatus(ResponseCode.DELETE_CASE.getStatus());
     }
 
     return response;
+  }
+
+  private void populateCaseResponse(CaseResponse response, Cases caseEntity) {
+    response.setPatientId(caseEntity.getPatientId());
+    response.setCaseId(caseEntity.getCaseId());
+    response.setPatientNameEnglish(caseEntity.getPatientNameEnglish());
+    response.setCaseNumber(caseEntity.getCaseNumber());
+    response.setSymptoms(caseEntity.getSymptoms());
+    response.setPrescription(caseEntity.getPrescription());
+    response.setExaminationDate(caseEntity.getExaminationDate());
   }
 }

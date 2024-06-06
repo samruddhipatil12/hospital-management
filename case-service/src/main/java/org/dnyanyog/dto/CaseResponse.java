@@ -4,6 +4,7 @@ public class CaseResponse {
 
   private String patientNameEnglish;
   private String patientId;
+  private String caseId;
   private String caseNumber;
   private String examinationDate;
   private String symptoms;
@@ -23,8 +24,16 @@ public class CaseResponse {
     return patientId;
   }
 
-  public void setPatientId(String string) {
-    this.patientId = string;
+  public void setPatientId(String patientId) {
+    this.patientId = patientId;
+  }
+
+  public String getCaseId() {
+    return caseId;
+  }
+
+  public void setCaseId(String caseId) {
+    this.caseId = caseId;
   }
 
   public String getCaseNumber() {

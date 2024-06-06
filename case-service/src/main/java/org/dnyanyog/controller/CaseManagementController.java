@@ -19,22 +19,19 @@ public class CaseManagementController {
     return caseService.addCase(caseRequest);
   }
 
-  @PostMapping("/api/v1/case/{patient_id}")
+  @PutMapping("/api/v1/case/{patientId}")
   public CaseResponse updateCase(
-      @PathVariable String patient_id, @RequestBody CaseRequest request) {
-    Long patientId = Long.parseLong(patient_id); // we use this to convert String to Long
+      @PathVariable("patientId") String patientId, @RequestBody CaseRequest request) {
     return caseService.updateCase(patientId, request);
   }
 
-  @GetMapping(path = "/api/v1/case/{patient_id}")
-  public CaseResponse searchCase(@PathVariable String patient_id) {
-    Long patientId = Long.parseLong(patient_id);
-    return caseService.searchCase(patientId);
+  @GetMapping("/api/v1/case/{caseId}")
+  public CaseResponse SearchCase(@PathVariable("caseId") String caseId) {
+    return caseService.searchCase(caseId);
   }
 
-  @DeleteMapping(path = "/api/v1/case/{patient_id}")
-  public CaseResponse deleteCase(@PathVariable String patient_id) {
-    Long patientId = Long.parseLong(patient_id); // Convert String to Long
-    return caseService.deleteCase(patientId);
+  @DeleteMapping("/api/v1/case/{caseId}")
+  public CaseResponse deleteCase(@PathVariable("caseId") String caseId) {
+    return caseService.deleteCase(caseId);
   }
 }

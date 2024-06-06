@@ -3,8 +3,6 @@ package org.dnyanyog.entity;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import org.springframework.stereotype.Component;
@@ -19,9 +17,11 @@ public class Cases {
   private String patientNameEnglish;
 
   @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
   @Column(name = "patient_id", nullable = false, unique = true)
-  private Long patientId;
+  private String patientId;
+
+  @Column(name = "case_id", nullable = false, unique = true)
+  private String caseId;
 
   @Column(name = "case_number", nullable = false, length = 50)
   private String caseNumber;
@@ -35,7 +35,6 @@ public class Cases {
   @Column(name = "prescription")
   private String prescription;
 
-  // Getters and Setters
   public String getPatientNameEnglish() {
     return patientNameEnglish;
   }
@@ -44,12 +43,20 @@ public class Cases {
     this.patientNameEnglish = patientNameEnglish;
   }
 
-  public Long getPatientId() {
+  public String getPatientId() {
     return patientId;
   }
 
-  public void setPatientId(Long patientId) {
+  public void setPatientId(String patientId) {
     this.patientId = patientId;
+  }
+
+  public String getCaseId() {
+    return caseId;
+  }
+
+  public void setCaseId(String caseId) {
+    this.caseId = caseId;
   }
 
   public String getCaseNumber() {

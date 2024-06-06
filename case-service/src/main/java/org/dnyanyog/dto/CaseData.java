@@ -17,9 +17,6 @@ public class CaseData {
   @Size(max = 50, message = "Patient name length should be at most 50 characters")
   private String patientNameEnglish;
 
-  @NotNull(message = "Patient ID is mandatory")
-  private String patientId;
-
   @NotNull(message = "Case number is mandatory")
   @NotBlank(message = "Case number should not be blank")
   private String caseNumber;
@@ -40,14 +37,6 @@ public class CaseData {
 
   public void setPatientNameEnglish(String patientNameEnglish) {
     this.patientNameEnglish = patientNameEnglish;
-  }
-
-  public String getPatientId() {
-    return patientId;
-  }
-
-  public void setPatientId(String patientId) {
-    this.patientId = patientId;
   }
 
   public String getCaseNumber() {
